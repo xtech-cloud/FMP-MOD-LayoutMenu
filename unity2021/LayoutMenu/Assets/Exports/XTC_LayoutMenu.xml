@@ -20,7 +20,7 @@
   <Styles>
     <Style name="default" layout="GridLayout">
       <Background image="bg.jpg"></Background>
-      <GridLayout column="3" row="2">
+      <GridLayout column="5" row="3">
         <Anchor horizontal="center" vertical="center" marginH="0" marginV="30" width="1280" height="680"/>
         <Spacing x="125" y="100"/>
       </GridLayout>
