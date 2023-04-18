@@ -9,6 +9,27 @@ namespace XTC.FMP.MOD.LayoutMenu.LIB.Unity
     /// </summary>
     public class MyConfig : MyConfigBase
     {
+        public class ImageElement
+        {
+            [XmlAttribute("width")]
+            public int width { get; set; } = 0;
+            [XmlAttribute("height")]
+            public int height { get; set; } = 0;
+            [XmlAttribute("image")]
+            public string image { get; set; } = "";
+        }
+
+        public class LabelElement
+        {
+            [XmlAttribute("width")]
+            public int width { get; set; } = 0;
+            [XmlAttribute("height")]
+            public int height { get; set; } = 0;
+            [XmlAttribute("color")]
+            public string color{ get; set; } = "";
+            [XmlAttribute("fontSize")]
+            public int fontSize{ get; set; } = 22;
+        }
         public class Border
         {
             [XmlAttribute("left")]
@@ -64,6 +85,18 @@ namespace XTC.FMP.MOD.LayoutMenu.LIB.Unity
             public Offset2 spacing { get; set; } = new Offset2();
         }
 
+        public class Pagination
+        {
+            [XmlElement("Anchor")]
+            public Anchor anchor { get; set; } = new Anchor();
+            [XmlElement("ButtonPrev")]
+            public ImageElement btnPrev { get; set; } = new ImageElement();
+            [XmlElement("ButtonNext")]
+            public ImageElement btnNext { get; set; } = new ImageElement();
+            [XmlElement("TextNumber")]
+            public LabelElement txtNumber { get; set; } = new LabelElement();
+        }
+
         public class Style
         {
             [XmlAttribute("name")]
@@ -76,6 +109,8 @@ namespace XTC.FMP.MOD.LayoutMenu.LIB.Unity
             public GridLayout gridLayout { get; set; } = new GridLayout();
             [XmlElement("Cell")]
             public Cell cell { get; set; } = new Cell();
+            [XmlElement("Pagination")]
+            public Pagination pagination { get; set; } = new Pagination();
         }
 
 

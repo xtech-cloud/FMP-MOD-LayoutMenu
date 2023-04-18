@@ -25,11 +25,19 @@ namespace XTC.FMP.MOD.LayoutMenu.LIB.Unity
         {
             public RectTransform rtPanel;
             public GameObject templateCell;
+            public GameObject objPagination;
+            public Button btnPrev;
+            public Button btnNext;
+            public Text textNumber;
         }
 
         private UiReference uiReference_ = new UiReference();
         private ContentReader contentReader_ = null;
         private List<string> contentUriS_ = new List<string>();
+        private int currentPage_ = 0;
+        private int totalPage_ = 0;
+        private int pageCipacity_ = 0;
+        private List<GameObject> cellS_ = new List<GameObject>();
 
         public MyInstance(string _uid, string _style, MyConfig _config, MyCatalog _catalog, LibMVCS.Logger _logger, Dictionary<string, LibMVCS.Any> _settings, MyEntryBase _entry, MonoBehaviour _mono, GameObject _rootAttachments)
             : base(_uid, _style, _config, _catalog, _logger, _settings, _entry, _mono, _rootAttachments)
@@ -81,6 +89,45 @@ namespace XTC.FMP.MOD.LayoutMenu.LIB.Unity
                 ColorUtility.TryParseHtmlString(style_.cell.label.color, out color);
                 text.color = color;
             }
+            // 应用分页栏样式
+            {
+                uiReference_.objPagination = rootUI.transform.Find("Pagination").gameObject;
+                alignByAncor(uiReference_.objPagination.transform, style_.pagination.anchor);
+                uiReference_.objPagination.SetActive(false);
+                uiReference_.btnPrev = uiReference_.objPagination.transform.Find("btnPrev").GetComponent<Button>();
+                uiReference_.btnNext = uiReference_.objPagination.transform.Find("btnNext").GetComponent<Button>();
+                uiReference_.textNumber = uiReference_.objPagination.transform.Find("txtNumber").GetComponent<Text>();
+                uiReference_.btnPrev.GetComponent<RectTransform>().sizeDelta = new Vector2(style_.pagination.btnPrev.width, style_.pagination.btnPrev.height);
+                uiReference_.btnNext.GetComponent<RectTransform>().sizeDelta = new Vector2(style_.pagination.btnNext.width, style_.pagination.btnNext.height);
+                uiReference_.textNumber.GetComponent<RectTransform>().sizeDelta = new Vector2(style_.pagination.txtNumber.width, style_.pagination.txtNumber.height);
+                loadTextureFromTheme(style_.pagination.btnPrev.image, (_texture) =>
+                {
+                    uiReference_.btnPrev.GetComponent<RawImage>().texture = _texture;
+                }, () => { });
+                loadTextureFromTheme(style_.pagination.btnNext.image, (_texture) =>
+                {
+                    uiReference_.btnNext.GetComponent<RawImage>().texture = _texture;
+                }, () => { });
+                Color color = Color.black;
+                ColorUtility.TryParseHtmlString(style_.pagination.txtNumber.color, out color);
+                var text = uiReference_.textNumber.GetComponent<Text>();
+                text.color = color;
+                text.fontSize = style_.pagination.txtNumber.fontSize;
+                uiReference_.btnNext.onClick.AddListener(() =>
+                {
+                    currentPage_ += 1;
+                    if (currentPage_ >= totalPage_)
+                        currentPage_ = totalPage_ - 1;
+                    refreshPagination();
+                });
+                uiReference_.btnPrev.onClick.AddListener(() =>
+                {
+                    currentPage_ -= 1;
+                    if (currentPage_ < 0)
+                        currentPage_ = 0;
+                    refreshPagination();
+                });
+            }
             buildLayout();
         }
 
@@ -114,6 +161,12 @@ namespace XTC.FMP.MOD.LayoutMenu.LIB.Unity
             rootUI.gameObject.SetActive(false);
             rootWorld.gameObject.SetActive(false);
             contentReader_ = null;
+
+            foreach (var obj in cellS_)
+            {
+                GameObject.Destroy(obj.gameObject);
+            }
+            cellS_.Clear();
         }
 
         private void buildLayout()
@@ -126,37 +179,12 @@ namespace XTC.FMP.MOD.LayoutMenu.LIB.Unity
                 layout.spacing = new Vector2(style_.gridLayout.spacing.x, style_.gridLayout.spacing.y);
                 layout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
                 layout.constraintCount = style_.gridLayout.column;
+                pageCipacity_ = style_.gridLayout.row * style_.gridLayout.column;
             }
         }
 
         private void fillCells()
         {
-            // 创建节点的函数定义
-            Action<string> createCell = (_contentUri) =>
-            {
-                var clone = GameObject.Instantiate(uiReference_.templateCell, uiReference_.templateCell.transform.parent);
-                clone.name = _contentUri;
-                clone.gameObject.SetActive(true);
-                contentReader_.ContentUri = _contentUri;
-                contentReader_.LoadText("meta.json", (_bytes) =>
-                {
-                    try
-                    {
-                        string json = Encoding.UTF8.GetString(_bytes);
-                        var contentSchema = JsonConvert.DeserializeObject<ContentMetaSchema>(json);
-                        clone.transform.Find("text").GetComponent<Text>().text = contentSchema.name;
-                    }
-                    catch (Exception ex)
-                    {
-                        logger_.Error("load:{0}/meta.json throw exception", _contentUri);
-                        logger_.Exception(ex);
-                    }
-                }, () => { });
-                contentReader_.LoadTexture("icon.png", (_texture) =>
-                {
-                    clone.transform.Find("IconMask/icon").GetComponent<RawImage>().texture = _texture;
-                }, () => { });
-            };
 
             // 开始解析包含的包
             Dictionary<string, List<string>> bundleUuidS = new Dictionary<string, List<string>>();
@@ -181,10 +209,11 @@ namespace XTC.FMP.MOD.LayoutMenu.LIB.Unity
             bundleLoadSequence.OnFinish = () =>
             {
                 logger_.Info("found [{0}] contents", contentUriS_.Count);
-                foreach (var contentUri in contentUriS_)
-                {
-                    createCell(contentUri);
-                }
+                totalPage_ = contentUriS_.Count / (style_.gridLayout.row * style_.gridLayout.column);
+                if (contentUriS_.Count % (style_.gridLayout.row * style_.gridLayout.column) != 0)
+                    totalPage_ += 1;
+                refreshPagination();
+                uiReference_.objPagination.SetActive(totalPage_ > 1);
             };
 
             // 开始解析匹配的内容路径
@@ -217,6 +246,54 @@ namespace XTC.FMP.MOD.LayoutMenu.LIB.Unity
                     }
                     bundleLoadSequence.Tick();
                 }, () => { });
+            }
+        }
+
+        private void refreshPagination()
+        {
+            uiReference_.textNumber.text = string.Format("{0}/{1}", currentPage_ + 1, totalPage_);
+            uiReference_.btnPrev.interactable = currentPage_ > 0;
+            uiReference_.btnNext.interactable = currentPage_ < totalPage_ - 1;
+
+            // 创建节点的函数定义
+            Func<string, GameObject> createCell = (_contentUri) =>
+            {
+                var clone = GameObject.Instantiate(uiReference_.templateCell, uiReference_.templateCell.transform.parent);
+                clone.name = _contentUri;
+                clone.gameObject.SetActive(true);
+                contentReader_.ContentUri = _contentUri;
+                contentReader_.LoadText("meta.json", (_bytes) =>
+                {
+                    try
+                    {
+                        string json = Encoding.UTF8.GetString(_bytes);
+                        var contentSchema = JsonConvert.DeserializeObject<ContentMetaSchema>(json);
+                        clone.transform.Find("text").GetComponent<Text>().text = contentSchema.name;
+                    }
+                    catch (Exception ex)
+                    {
+                        logger_.Error("load:{0}/meta.json throw exception", _contentUri);
+                        logger_.Exception(ex);
+                    }
+                }, () => { });
+                contentReader_.LoadTexture("icon.png", (_texture) =>
+                {
+                    clone.transform.Find("IconMask/icon").GetComponent<RawImage>().texture = _texture;
+                }, () => { });
+                return clone;
+            };
+
+            foreach (var obj in cellS_)
+            {
+                GameObject.Destroy(obj.gameObject);
+            }
+            cellS_.Clear();
+
+            for (int i = currentPage_ * pageCipacity_; i < contentUriS_.Count && i < (currentPage_ + 1) * pageCipacity_; ++i)
+            {
+                var contentUri = contentUriS_[i];
+                var obj = createCell(contentUri);
+                cellS_.Add(obj);
             }
         }
     }

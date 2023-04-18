@@ -28,7 +28,7 @@ public class Root : RootBase
     {
         if (GUI.Button(new Rect(0, 0, 60, 30), "Create"))
         {
-            entry_.__DebugCreate("test", "default", "", "");
+            entry_.__DebugCreate("test", "default", "", "", "", "");
         }
 
         if (GUI.Button(new Rect(0, 30, 60, 30), "Open"))

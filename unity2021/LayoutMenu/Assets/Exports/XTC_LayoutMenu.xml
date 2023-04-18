@@ -20,15 +20,21 @@
   <Styles>
     <Style name="default" layout="GridLayout">
       <Background image="bg.jpg"></Background>
-      <GridLayout column="5" row="3">
-        <Anchor horizontal="center" vertical="center" marginH="0" marginV="0" width="1280" height="680"/>
+      <GridLayout column="3" row="2">
+        <Anchor horizontal="center" vertical="center" marginH="0" marginV="30" width="1280" height="680"/>
         <Spacing x="125" y="100"/>
       </GridLayout>
+      <Pagination>
+        <Anchor horizontal="center" vertical="center" marginH="0" marginV="-410" />
+        <ButtonPrev image="btnPrev.png" width="48" height="48"/>
+        <ButtonNext image="btnNext.png" width="48" height="48"/>
+        <TextNumber width="128" height="48" fontSize="24" color="#A42B20FF"/>
+      </Pagination>
       <Cell width="156" height="156">
         <IconMask image="icon_mask.png">
           <Anchor width="183" height="183"/>
         </IconMask>
-        <Label fontSize="24" color="#333333FF">
+        <Label fontSize="24" color="#A42B20FF">
           <Anchor horizontal="center" vertical="top" marginH="0" marginV="174" width="240" height="64"/>
         </Label>
       </Cell>

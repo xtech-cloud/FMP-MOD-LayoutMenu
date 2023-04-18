@@ -36,12 +36,14 @@ namespace XTC.FMP.MOD.LayoutMenu.LIB.Unity
         /// <param name="_style">实例的样式名</param>
         /// <param name="_uiSlot">ui挂载的路径</param>
         /// <param name="_worldSlot">world挂载的路径</param>
-        public void __DebugCreate(string _uid, string _style, string _uiSlot, string _worldSlot)
+        public void __DebugCreate(string _uid, string _style, string _uiRoot, string _uiSlot, string _worldRoot, string _worldSlot)
         {
             var data = new Dictionary<string, object>();
             data["uid"] = _uid;
             data["style"] = _style;
+            data["uiRoot"] = _uiRoot;
             data["uiSlot"] = _uiSlot;
+            data["worldRoot"] = _worldRoot;
             data["worldSlot"] = _worldSlot;
             modelDummy_.Publish(MySubjectBase.Create, data);
         }
