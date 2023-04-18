@@ -7,12 +7,12 @@ using UnityEngine.UI;
 using LibMVCS = XTC.FMP.LIB.MVCS;
 using XTC.FMP.MOD.LayoutMenu.LIB.Proto;
 using XTC.FMP.MOD.LayoutMenu.LIB.MVCS;
-using Unity.VisualScripting.Dependencies.NCalc;
 using System.IO;
 using Newtonsoft.Json;
 using System.Text;
 using System;
 using Unity.Collections.LowLevel.Unsafe;
+using SoftMasking;
 
 namespace XTC.FMP.MOD.LayoutMenu.LIB.Unity
 {
@@ -47,14 +47,36 @@ namespace XTC.FMP.MOD.LayoutMenu.LIB.Unity
             uiReference_.rtPanel = rootUI.transform.Find("Panel").GetComponent<RectTransform>();
             uiReference_.templateCell = rootUI.transform.Find("Panel/Cell").gameObject;
             uiReference_.templateCell.SetActive(false);
+            loadTextureFromTheme(style_.background.image, (_texture) =>
+            {
+                rootUI.transform.Find("Background").GetComponent<RawImage>().texture = _texture;
+            }, () => { });
+            // 应用SoftMask
+            {
+                var softmask = uiReference_.templateCell.transform.Find("IconMask").gameObject.AddComponent<SoftMask>();
+                softmask.defaultUIShader = rootAttachments.transform.Find("Shader_SoftMask").GetComponent<MeshRenderer>().material.shader;
+                softmask.defaultUIETC1Shader = rootAttachments.transform.Find("Shader_SoftMaskETC1").GetComponent<MeshRenderer>().material.shader;
+                loadTextureFromTheme(style_.cell.iconMask.image, (_texture) =>
+                {
+                    uiReference_.templateCell.transform.Find("IconMask").GetComponent<RawImage>().texture = _texture;
+                }, () => { });
+                alignByAncor(softmask.transform, style_.cell.iconMask.anchor);
+            }
+            // 应用节点图标样式
+            {
+                var cellIcon = rootUI.transform.Find("Panel/Cell/IconMask/icon").GetComponent<RectTransform>();
+                MyConfig.Anchor anchor = new MyConfigBase.Anchor();
+                anchor.width = style_.cell.width;
+                anchor.height = style_.cell.height;
+                alignByAncor(cellIcon.transform, anchor);
+            }
             // 应用节点文字样式
             {
-
                 var cellText = rootUI.transform.Find("Panel/Cell/text").GetComponent<RectTransform>();
-                cellText.sizeDelta = new Vector2(style_.cell.label.width, style_.cell.label.height);
-                cellText.anchoredPosition = new Vector2(0, -style_.cell.label.offset);
+                alignByAncor(cellText.transform, style_.cell.label.anchor);
                 var text = cellText.GetComponent<Text>();
                 text.fontSize = style_.cell.label.fontSize;
+                text.font = settings_["font.main"].AsObject() as Font;
                 Color color = Color.black;
                 ColorUtility.TryParseHtmlString(style_.cell.label.color, out color);
                 text.color = color;
@@ -101,7 +123,6 @@ namespace XTC.FMP.MOD.LayoutMenu.LIB.Unity
                 alignByAncor(uiReference_.rtPanel.transform, style_.gridLayout.anchor);
                 var layout = uiReference_.rtPanel.gameObject.AddComponent<GridLayoutGroup>();
                 layout.cellSize = new Vector2(style_.cell.width, style_.cell.height);
-                layout.padding = new RectOffset(style_.gridLayout.padding.left, style_.gridLayout.padding.right, style_.gridLayout.padding.left, style_.gridLayout.padding.bottom);
                 layout.spacing = new Vector2(style_.gridLayout.spacing.x, style_.gridLayout.spacing.y);
                 layout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
                 layout.constraintCount = style_.gridLayout.column;
@@ -133,7 +154,7 @@ namespace XTC.FMP.MOD.LayoutMenu.LIB.Unity
                 }, () => { });
                 contentReader_.LoadTexture("icon.png", (_texture) =>
                 {
-                    clone.GetComponent<RawImage>().texture = _texture;
+                    clone.transform.Find("IconMask/icon").GetComponent<RawImage>().texture = _texture;
                 }, () => { });
             };
 

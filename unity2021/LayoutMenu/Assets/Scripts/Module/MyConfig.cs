@@ -29,18 +29,15 @@ namespace XTC.FMP.MOD.LayoutMenu.LIB.Unity
             public int y { get; set; } = 0;
         }
 
+
         public class Label
         {
             [XmlAttribute("fontSize")]
             public int fontSize { get; set; } = 12;
-            [XmlAttribute("offset")]
-            public int offset { get; set; } = 24;
-            [XmlAttribute("width")]
-            public int width { get; set; } = 100;
-            [XmlAttribute("height")]
-            public int height { get; set; } = 32;
             [XmlAttribute("color")]
             public string color { get; set; } = "#000000FF";
+            [XmlElement("Anchor")]
+            public Anchor anchor { get; set; } = new Anchor();
         }
 
         public class Cell
@@ -49,6 +46,8 @@ namespace XTC.FMP.MOD.LayoutMenu.LIB.Unity
             public int width { get; set; } = 0;
             [XmlAttribute("height")]
             public int height { get; set; } = 0;
+            [XmlElement("IconMask")]
+            public UiElement iconMask { get; set; } = new UiElement();
             [XmlElement("Label")]
             public Label label { get; set; } = new Label();
         }
@@ -61,8 +60,6 @@ namespace XTC.FMP.MOD.LayoutMenu.LIB.Unity
             public int row { get; set; } = 0;
             [XmlElement("Anchor")]
             public Anchor anchor { get; set; } = new Anchor();
-            [XmlElement("Padding")]
-            public Border padding { get; set; } = new Border();
             [XmlElement("Spacing")]
             public Offset2 spacing { get; set; } = new Offset2();
         }
@@ -73,6 +70,8 @@ namespace XTC.FMP.MOD.LayoutMenu.LIB.Unity
             public string name { get; set; } = "";
             [XmlAttribute("layout")]
             public string layout { get; set; } = "";
+            [XmlElement("Background")]
+            public UiElement background { get; set; } = new UiElement();
             [XmlElement("GridLayout")]
             public GridLayout gridLayout { get; set; } = new GridLayout();
             [XmlElement("Cell")]

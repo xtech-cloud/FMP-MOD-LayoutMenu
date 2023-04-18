@@ -19,13 +19,18 @@
     -->
   <Styles>
     <Style name="default" layout="GridLayout">
+      <Background image="bg.jpg"></Background>
       <GridLayout column="5" row="3">
-        <Anchor horizontal="center" vertical="center" marginH="0" marginV="0" width="1260" height="600"/>
-        <Padding left="0" right="0" top="0" bottom="0"/>
-        <Spacing x="64" y="128"/>
+        <Anchor horizontal="center" vertical="center" marginH="0" marginV="0" width="1280" height="680"/>
+        <Spacing x="125" y="100"/>
       </GridLayout>
-      <Cell width="200" height="200">
-        <Label fontSize="24" offset="12" width="200" height="64" color="#333333FF"/>
+      <Cell width="156" height="156">
+        <IconMask image="icon_mask.png">
+          <Anchor width="183" height="183"/>
+        </IconMask>
+        <Label fontSize="24" color="#333333FF">
+          <Anchor horizontal="center" vertical="top" marginH="0" marginV="174" width="240" height="64"/>
+        </Label>
       </Cell>
     </Style>
   </Styles>
