@@ -71,6 +71,8 @@ namespace XTC.FMP.MOD.LayoutMenu.LIB.Unity
             public UiElement iconMask { get; set; } = new UiElement();
             [XmlElement("Label")]
             public Label label { get; set; } = new Label();
+            [XmlArray("OnClickSubjectS"), XmlArrayItem("Subject")]
+            public Subject[] onClickSubjectS { get; set; } = new Subject[0];
         }
 
         public class GridLayout

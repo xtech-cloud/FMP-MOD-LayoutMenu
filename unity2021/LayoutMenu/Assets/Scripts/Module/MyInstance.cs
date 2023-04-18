@@ -280,6 +280,12 @@ namespace XTC.FMP.MOD.LayoutMenu.LIB.Unity
                 {
                     clone.transform.Find("IconMask/icon").GetComponent<RawImage>().texture = _texture;
                 }, () => { });
+                clone.GetComponent<Button>().onClick.AddListener(() =>
+                {
+                    Dictionary<string, object> variableS = new Dictionary<string, object>();
+                    variableS["{{content_uri}}"] = _contentUri;
+                    publishSubjects(style_.cell.onClickSubjectS, variableS);
+                });
                 return clone;
             };
 

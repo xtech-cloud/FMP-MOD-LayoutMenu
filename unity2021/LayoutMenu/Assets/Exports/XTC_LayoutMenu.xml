@@ -37,6 +37,16 @@
         <Label fontSize="24" color="#A42B20FF">
           <Anchor horizontal="center" vertical="top" marginH="0" marginV="174" width="240" height="64"/>
         </Label>
+        <OnClickSubjectS>
+          <Subject message="/XTC/LuaEnv/Open">
+            <Parameters>
+              <Parameter key="uid" value="default" type="string"/>
+              <Parameter key="source" value="assloud://" type="string"/>
+              <Parameter key="uri" value="{{content_uri}}" type="string"/>
+              <Parameter key="delay" value="0" type="float"/>
+            </Parameters>
+          </Subject>
+        </OnClickSubjectS>
       </Cell>
     </Style>
   </Styles>
