@@ -148,6 +148,7 @@ namespace XTC.FMP.MOD.LayoutMenu.LIB.Unity
         {
             contentReader_ = new ContentReader(contentObjectsPool);
             contentReader_.AssetRootPath = settings_["path.assets"].AsString();
+            currentPage_ = 0;
             fillCells();
             rootUI.gameObject.SetActive(true);
             rootWorld.gameObject.SetActive(true);
@@ -167,6 +168,7 @@ namespace XTC.FMP.MOD.LayoutMenu.LIB.Unity
                 GameObject.Destroy(obj.gameObject);
             }
             cellS_.Clear();
+            contentUriS_.Clear();
         }
 
         private void buildLayout()
