@@ -38,6 +38,7 @@ namespace XTC.FMP.MOD.LayoutMenu.LIB.Unity
         private int totalPage_ = 0;
         private int pageCipacity_ = 0;
         private List<GameObject> cellS_ = new List<GameObject>();
+        private Dictionary<string, string> resourceUriS_ = new Dictionary<string, string>();
 
         public MyInstance(string _uid, string _style, MyConfig _config, MyCatalog _catalog, LibMVCS.Logger _logger, Dictionary<string, LibMVCS.Any> _settings, MyEntryBase _entry, MonoBehaviour _mono, GameObject _rootAttachments)
             : base(_uid, _style, _config, _catalog, _logger, _settings, _entry, _mono, _rootAttachments)
@@ -169,6 +170,7 @@ namespace XTC.FMP.MOD.LayoutMenu.LIB.Unity
             }
             cellS_.Clear();
             contentUriS_.Clear();
+            resourceUriS_.Clear();
         }
 
         private void buildLayout()
@@ -271,6 +273,11 @@ namespace XTC.FMP.MOD.LayoutMenu.LIB.Unity
                         string json = Encoding.UTF8.GetString(_bytes);
                         var contentSchema = JsonConvert.DeserializeObject<ContentMetaSchema>(json);
                         clone.transform.Find("text").GetComponent<Text>().text = contentSchema.name;
+                        string kvValue = null;
+                        if (contentSchema.kvS.TryGetValue(style_.metaKey, out kvValue))
+                        {
+                            resourceUriS_[_contentUri] = string.Format("{0}/_resources/{1}", contentSchema.foreign_bundle_uuid, kvValue);
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -285,7 +292,10 @@ namespace XTC.FMP.MOD.LayoutMenu.LIB.Unity
                 clone.GetComponent<Button>().onClick.AddListener(() =>
                 {
                     Dictionary<string, object> variableS = new Dictionary<string, object>();
-                    variableS["{{content_uri}}"] = _contentUri;
+                    if (resourceUriS_.ContainsKey(_contentUri))
+                    {
+                        variableS["{{resource_uri}}"] = resourceUriS_[_contentUri];
+                    }
                     publishSubjects(style_.cell.onClickSubjectS, variableS);
                 });
                 return clone;

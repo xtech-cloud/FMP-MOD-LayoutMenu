@@ -26,9 +26,9 @@ namespace XTC.FMP.MOD.LayoutMenu.LIB.Unity
             [XmlAttribute("height")]
             public int height { get; set; } = 0;
             [XmlAttribute("color")]
-            public string color{ get; set; } = "";
+            public string color { get; set; } = "";
             [XmlAttribute("fontSize")]
-            public int fontSize{ get; set; } = 22;
+            public int fontSize { get; set; } = 22;
         }
         public class Border
         {
@@ -105,6 +105,8 @@ namespace XTC.FMP.MOD.LayoutMenu.LIB.Unity
             public string name { get; set; } = "";
             [XmlAttribute("layout")]
             public string layout { get; set; } = "";
+            [XmlAttribute("metaKey")]
+            public string metaKey { get; set; } = "";
             [XmlElement("Background")]
             public UiElement background { get; set; } = new UiElement();
             [XmlElement("GridLayout")]

@@ -16,9 +16,25 @@
   <GRPC address="https://localhost:19000"/>
   <!-- 样式列表
       name: 名称
+      layout: 使用的版式类型，可选值[GridLayout]
+      metaKey: 内容mete.json中kvS的键名，获取此键的值构建{{resource_uri}}变量，变量构建完成后的格式如 mybundle/_resources/1.lsa
+      Background.image: 背景图
+      GridLayout.column: 网格布局的列数
+      GridLayout.row: 网格布局的行数
+      GridLayout.Anchor: 网格布局的锚点
+      Pagination.Anchor: 分页栏的锚点
+      Pagination.ButtonPrev: 分页栏的上一页按钮
+      Pagination.ButtonNext: 分页栏的下一页按钮
+      Pagination.TextNumber: 分页栏的页码文字
+      Cell.width:  布局中单元格的宽度
+      Cell.height:  布局中单元格的高度
+      Cell.IconMask.image:  布局中单元格的图标遮罩图片
+      Cell.IconMask.Anchor:  布局中单元格的图标遮罩锚点，遮罩有投影等效果时，尺寸比单元格大
+      Cell.Label:  布局中单元格的文字
+      Cell.OnClickSubjectS:  布局中单元格点击后发布的订阅主题
     -->
   <Styles>
-    <Style name="default" layout="GridLayout">
+    <Style name="default" layout="GridLayout" metaKey="LuaEnv.Resource">
       <Background image="bg.jpg"></Background>
       <GridLayout column="5" row="3">
         <Anchor horizontal="center" vertical="center" marginH="0" marginV="30" width="1280" height="680"/>
@@ -42,7 +58,7 @@
             <Parameters>
               <Parameter key="uid" value="default" type="string"/>
               <Parameter key="source" value="assloud://" type="string"/>
-              <Parameter key="uri" value="{{content_uri}}" type="string"/>
+              <Parameter key="uri" value="{{resource_uri}}" type="string"/>
               <Parameter key="delay" value="0" type="float"/>
             </Parameters>
           </Subject>
